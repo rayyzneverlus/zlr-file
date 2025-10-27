@@ -1,0 +1,51 @@
+case 'ping': {
+				try {
+					const used = process.memoryUsage();
+					const cpus = os.cpus().map(cpu => {
+						cpu.total = Object.keys(cpu.times).reduce((last, type) => last + cpu.times[type], 0);
+						return cpu;
+					});
+					const cpu = cpus.reduce((last, cpu, _, { length }) => {
+						last.total += cpu.total;
+						last.speed += cpu.speed / length;
+						last.times.user += cpu.times.user;
+						last.times.nice += cpu.times.nice;
+						last.times.sys += cpu.times.sys;
+						last.times.idle += cpu.times.idle;
+						last.times.irq += cpu.times.irq;
+						return last;
+					}, {
+						speed: 0,
+						total: 0,
+						times: { user: 0, nice: 0, sys: 0, idle: 0, irq: 0 }
+					});
+					let start = performance.now();
+					let end = performance.now();
+					let latensi = end - start;
+					let osInfo = await nou.os.oos();
+					let storage = await nou.drive.info();
+					let respon = `✨ *Informasi Bot WhatsApp* ✨\n\n📡 *Jaringan Server*\n · *Ping:* ${latensi.toFixed(4)} Detik\n\n🖥️ *Informasi Server*\n · *OS:* ${osInfo}\n · *IP Address:* ${nou.os.ip()}\n · *Tipe OS:* ${nou.os.type()}\n\n💾 *RAM:*\n · *Total:* ${formatp(os.totalmem())}\n · *Digunakan:* ${formatp(os.totalmem() - os.freemem())}\n\n📂 *Penyimpanan:*\n · *Total:* ${storage.totalGb} GB\n · *Digunakan:* ${storage.usedGb} GB (${storage.usedPercentage}%)\n · *Tersedia:* ${storage.freeGb} GB (${storage.freePercentage}%)\n\n⏳ *Waktu Aktif Server:*\n${runtime(process.uptime())}\n\n⚙️ *CPU (${cpus.length} Core)*\n · *Model:* ${cpus[0].model.trim()}\n · *Kecepatan:* ${cpu.speed} MHz\n${Object.keys(cpu.times).map(type => ` · *${type}*: ${(100 * cpu.times[type] / cpu.total).toFixed(2)}%\nTHIS CASE CREATED BY FAREL`).join('\n')}\n`;
+					await Awang.sendMessage(m.chat, {
+						text: respon,
+						contextInfo: {
+							mentionedJid: [m.sender],
+							forwardingScore: 999999, 
+							isForwarded: true, 
+							forwardedNewsletterMessageInfo: {
+								newsletterName: "ZELARIXA | SPECIAL CHANNEL",
+								newsletterJid: idch,
+							},
+							externalAdReply: {
+								title: foother,
+								thumbnailUrl: "https://files.catbox.moe/3zwmor.jpg",
+								sourceUrl: ch,
+								mediaType: 1,
+								renderLargerThumbnail: false
+							}
+						}
+					}, { quoted: m });
+				} catch (err) {
+					console.error(err);
+				}
+			}
+			break;
